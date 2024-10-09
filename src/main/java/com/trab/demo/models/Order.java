@@ -2,7 +2,9 @@ package com.trab.demo.models;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.trab.demo.models.enums.OrderStatus;
@@ -13,11 +15,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_order")
-public class Order implements Serializable{
+public class Order implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,10 +32,11 @@ public class Order implements Serializable{
     @JoinColumn(name = "client_id")
     private User client;
 
+    @OneToMany(mappedBy = "id.order")
+    private Set<OrderItem> items = new HashSet<>();
 
     public Order() {
     }
-
 
     public Order(Long id, Instant moment, OrderStatus orderStatus, User client) {
         this.id = id;
@@ -40,7 +44,6 @@ public class Order implements Serializable{
         setOrderStatus(orderStatus);
         this.client = client;
     }
-
 
     public Long getId() {
         return this.id;
@@ -63,7 +66,7 @@ public class Order implements Serializable{
     }
 
     public void setOrderStatus(OrderStatus orderStatus) {
-        if(orderStatus != null){
+        if (orderStatus != null) {
             this.orderStatus = orderStatus.getCode();
         }
     }
@@ -76,6 +79,9 @@ public class Order implements Serializable{
         this.client = client;
     }
 
+    public Set<OrderItem> getItems() {
+        return this.items;
+    }
 
     @Override
     public boolean equals(Object o) {
